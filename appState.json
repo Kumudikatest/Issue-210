@@ -1,29 +1,29 @@
 {
   "EDITOR_STATE": {
     "allProjectFiles": {
-      "7400f966-3951-4c5b-843b-e17e0b0380a5": {
-        "id": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+      "b7a9dae2-5751-49db-ae22-a74a5e2ece77": {
+        "id": "b7a9dae2-5751-49db-ae22-a74a5e2ece77",
         "parent": null,
         "name": "Issue-210",
         "type": "DIRECTORY",
         "isDirectory": true,
         "children": [
-          "f1aeea4b-1740-4e60-a2b0-1780c94adba1",
-          "450ba158-e740-4524-8ef9-993ba425c85e"
+          "322d4edb-2f8b-4c1a-979b-a00d6b0f3dae",
+          "a9a75daa-9beb-4ee9-9246-786ef05841cf"
         ],
         "isRemovable": false,
         "filePath": "Issue-210"
       },
-      "f1aeea4b-1740-4e60-a2b0-1780c94adba1": {
-        "id": "f1aeea4b-1740-4e60-a2b0-1780c94adba1",
-        "parent": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+      "322d4edb-2f8b-4c1a-979b-a00d6b0f3dae": {
+        "id": "322d4edb-2f8b-4c1a-979b-a00d6b0f3dae",
+        "parent": "b7a9dae2-5751-49db-ae22-a74a5e2ece77",
         "name": "lambda.js",
         "type": "LAMBDA_FILE",
         "isDirectory": false,
         "children": [],
         "isRemovable": true,
         "filePath": "Issue-210/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nconst sqs = new SL_AWS.SQS(AWS);\nlet SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You must always end/destroy the DB connection after it's used\n    rds.beginTransaction({\n        instanceIdentifier: 'Test'\n    }, function (error, connection) {\n        if (error) {\n            throw error;\n        }\n        connection.end();\n        sqs.receiveMessage({\n            QueueUrl: 'https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo',\n            AttributeNames: ['All'],\n            MaxNumberOfMessages: '1',\n            VisibilityTimeout: '30',\n            WaitTimeSeconds: '0'\n        }).promise()\n            .then(receivedMsgData => {\n                if (!!(receivedMsgData) && !!(receivedMsgData.Messages)) {\n                    let receivedMessages = receivedMsgData.Messages;\n                    receivedMessages.forEach(message => {\n                        // your logic to access each message through out the loop. Each message is available under variable message \n                        // within this block\n                    });\n                } else {\n                    // No messages to process\n                }\n            })\n            .catch(err => {\n                // error handling goes here\n            });\n    });\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
+        "code": "let AWS = require('aws-sdk');\nconst sqs = new SL_AWS.SQS(AWS);\nlet SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You must always end/destroy the DB connection after it's used\n    rds.beginTransaction({\n        instanceIdentifier: 'Test'\n    }, function (error, connection) {\n        if (error) {\n            throw error;\n        }\n        connection.end();\n        sqs.sendMessage({\n            MessageBody: 'Test',\n            QueueUrl: 'https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo',\n            DelaySeconds: '0',\n            MessageDeduplicationId: 'Test',\n            MessageAttributes: {}\n        }, function (data) {\n            // your logic (logging etc) to handle successful message delivery, should be here\n        }, function (error) {\n            // your logic (logging etc) to handle failures, should be here\n            console.log(error);\n        });\n    });\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1TestAPIMyLambdapost",
@@ -34,11 +34,19 @@
           "runtime": "nodejs8.10",
           "timeout": 60,
           "memory": 128
+        },
+        "testCases": {
+          "4a0f7680-a74f-4623-8690-5b2aa6469666": {
+            "id": "4a0f7680-a74f-4623-8690-5b2aa6469666",
+            "name": "Unnamed event",
+            "functionId": "322d4edb-2f8b-4c1a-979b-a00d6b0f3dae",
+            "event": "{\n    \"key1\": \"value1\",\n    \"key2\": \"value2\",\n    \"key3\": \"value3\"\n}"
+          }
         }
       },
-      "450ba158-e740-4524-8ef9-993ba425c85e": {
-        "id": "450ba158-e740-4524-8ef9-993ba425c85e",
-        "parent": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+      "a9a75daa-9beb-4ee9-9246-786ef05841cf": {
+        "id": "a9a75daa-9beb-4ee9-9246-786ef05841cf",
+        "parent": "b7a9dae2-5751-49db-ae22-a74a5e2ece77",
         "name": "ConnectionManager.js",
         "type": "JS_FILE",
         "isDirectory": false,
@@ -50,11 +58,11 @@
       }
     },
     "deletedFiles": [],
-    "rootNode": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+    "rootNode": "b7a9dae2-5751-49db-ae22-a74a5e2ece77",
     "openFiles": [
-      "f1aeea4b-1740-4e60-a2b0-1780c94adba1"
+      "322d4edb-2f8b-4c1a-979b-a00d6b0f3dae"
     ],
-    "currentFileId": "f1aeea4b-1740-4e60-a2b0-1780c94adba1",
+    "currentFileId": "322d4edb-2f8b-4c1a-979b-a00d6b0f3dae",
     "resources": {
       "rds-Test": {
         "name": "rds-Test",
@@ -117,7 +125,7 @@
           "maximumMessageSize": 256,
           "receiveMessageWaitTime": "0",
           "queueARN": "arn:aws:sqs:us-east-1:318300609668:test-queue.fifo",
-          "operation": 0
+          "operation": 1
         },
         "globallyEditable": false
       },
@@ -144,7 +152,7 @@
           "resourceId": "98nqbj",
           "restMethod": "POST",
           "proxyIntegration": false,
-          "enableCORS": false,
+          "enableCORS": true,
           "stageMode": 1,
           "stageName": "Test",
           "stageDeploymentId": "c8s6n7"
@@ -171,7 +179,7 @@
         }
       }
     },
-    "lambdaId": "f1aeea4b-1740-4e60-a2b0-1780c94adba1"
+    "lambdaId": "322d4edb-2f8b-4c1a-979b-a00d6b0f3dae"
   },
   "PROJECT_META": {
     "projectName": "Issue-210",
@@ -180,7 +188,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1546323569982
+    "lastSave": 1546324582339
   },
   "VCS_STATE": {
     "provider": "GitHub",

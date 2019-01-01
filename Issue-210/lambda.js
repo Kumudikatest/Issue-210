@@ -14,27 +14,18 @@ exports.handler = function (event, context, callback) {
             throw error;
         }
         connection.end();
-        sqs.receiveMessage({
+        sqs.sendMessage({
+            MessageBody: 'Test',
             QueueUrl: 'https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo',
-            AttributeNames: ['All'],
-            MaxNumberOfMessages: '1',
-            VisibilityTimeout: '30',
-            WaitTimeSeconds: '0'
-        }).promise()
-            .then(receivedMsgData => {
-                if (!!(receivedMsgData) && !!(receivedMsgData.Messages)) {
-                    let receivedMessages = receivedMsgData.Messages;
-                    receivedMessages.forEach(message => {
-                        // your logic to access each message through out the loop. Each message is available under variable message 
-                        // within this block
-                    });
-                } else {
-                    // No messages to process
-                }
-            })
-            .catch(err => {
-                // error handling goes here
-            });
+            DelaySeconds: '0',
+            MessageDeduplicationId: 'Test',
+            MessageAttributes: {}
+        }, function (data) {
+            // your logic (logging etc) to handle successful message delivery, should be here
+        }, function (error) {
+            // your logic (logging etc) to handle failures, should be here
+            console.log(error);
+        });
     });
 
     callback(null, { "message": "Successfully executed" });
