@@ -1,0 +1,192 @@
+{
+  "EDITOR_STATE": {
+    "allProjectFiles": {
+      "7400f966-3951-4c5b-843b-e17e0b0380a5": {
+        "id": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+        "parent": null,
+        "name": "Issue-210",
+        "type": "DIRECTORY",
+        "isDirectory": true,
+        "children": [
+          "f1aeea4b-1740-4e60-a2b0-1780c94adba1",
+          "450ba158-e740-4524-8ef9-993ba425c85e"
+        ],
+        "isRemovable": false,
+        "filePath": "Issue-210"
+      },
+      "f1aeea4b-1740-4e60-a2b0-1780c94adba1": {
+        "id": "f1aeea4b-1740-4e60-a2b0-1780c94adba1",
+        "parent": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+        "name": "lambda.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "Issue-210/lambda.js",
+        "code": "let AWS = require('aws-sdk');\nconst sqs = new SL_AWS.SQS(AWS);\nlet SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You must always end/destroy the DB connection after it's used\n    rds.beginTransaction({\n        instanceIdentifier: 'Test'\n    }, function (error, connection) {\n        if (error) {\n            throw error;\n        }\n        connection.end();\n        sqs.receiveMessage({\n            QueueUrl: 'https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo',\n            AttributeNames: ['All'],\n            MaxNumberOfMessages: '1',\n            VisibilityTimeout: '30',\n            WaitTimeSeconds: '0'\n        }).promise()\n            .then(receivedMsgData => {\n                if (!!(receivedMsgData) && !!(receivedMsgData.Messages)) {\n                    let receivedMessages = receivedMsgData.Messages;\n                    receivedMessages.forEach(message => {\n                        // your logic to access each message through out the loop. Each message is available under variable message \n                        // within this block\n                    });\n                } else {\n                    // No messages to process\n                }\n            })\n            .catch(err => {\n                // error handling goes here\n            });\n    });\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1TestAPIMyLambdapost",
+            "config": {}
+          }
+        ],
+        "config": {
+          "runtime": "nodejs8.10",
+          "timeout": 60,
+          "memory": 128
+        }
+      },
+      "450ba158-e740-4524-8ef9-993ba425c85e": {
+        "id": "450ba158-e740-4524-8ef9-993ba425c85e",
+        "parent": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+        "name": "ConnectionManager.js",
+        "type": "JS_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "Issue-210/ConnectionManager.js",
+        "code": "module.exports = function() {\n    this.dbConnections = [];\n\n    this.dbConnections[\"Test\"] = {\n        host: process.env.EndPoint_rdsTest,\n        port: process.env.Port_rdsTest,\n        user: process.env.User_rdsTest,\n        password: process.env.Password_rdsTest,\n        database: \"Test\"\n    };\n};",
+        "triggers": []
+      }
+    },
+    "deletedFiles": [],
+    "rootNode": "7400f966-3951-4c5b-843b-e17e0b0380a5",
+    "openFiles": [
+      "f1aeea4b-1740-4e60-a2b0-1780c94adba1"
+    ],
+    "currentFileId": "f1aeea4b-1740-4e60-a2b0-1780c94adba1",
+    "resources": {
+      "rds-Test": {
+        "name": "rds-Test",
+        "type": "RDS",
+        "config": {
+          "editMode": false,
+          "operation": 1,
+          "rdsInstance": {
+            "rdsEngineType": "mysql",
+            "rdsEdition": "",
+            "rdsInstanceSpec": {
+              "dbInstanceClass": "db.t2.micro",
+              "dbLicenseModel": "general-public-license",
+              "dbEngineVersion": "5.7.19"
+            },
+            "rdsSetting": {
+              "instanceIdentifier": "Test",
+              "masterUsername": "Test",
+              "masterPassword": "Test#123"
+            },
+            "rdsDBOptions": {
+              "dbName": "Test",
+              "dbPort": "1234"
+            },
+            "rdsInstanceArn": "",
+            "Host": "",
+            "doesExist": false,
+            "initializationQuery": "CREATE DATABASE Test;",
+            "alreadyDeployed": false
+          },
+          "rdsInstanceResources": [],
+          "projectRegion": "us-east-1",
+          "mode": 0,
+          "additionalFiles": [],
+          "params": {
+            "query": "",
+            "inserts": ""
+          },
+          "isGlobalEditMode": false,
+          "enableInject": true,
+          "isNewFromGlobal": false
+        },
+        "globallyEditable": true
+      },
+      "sqsusEast1testQueuefifo": {
+        "name": "sqsusEast1testQueuefifo",
+        "type": "SQS",
+        "config": {
+          "mode": 1,
+          "existing": true,
+          "name": "test-queue.fifo",
+          "url": "https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo",
+          "selectedRegion": "us-east-1",
+          "deliveryDelay": "0",
+          "deliveryDelayUnit": "seconds",
+          "queueType": "fifoQueue",
+          "defaultVisibilityTimeout": "30",
+          "defaultVisibilityTimeoutUnit": "seconds",
+          "messageRetentionPeriodUnit": "seconds",
+          "maximumMessageSize": 256,
+          "receiveMessageWaitTime": "0",
+          "queueARN": "arn:aws:sqs:us-east-1:318300609668:test-queue.fifo",
+          "operation": 0
+        },
+        "globallyEditable": false
+      },
+      "apigusEast1TestAPIMyLambdapost": {
+        "name": "apigusEast1TestAPIMyLambdapost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 1,
+          "apiName": "TestAPI",
+          "apiId": "0itznun7w3",
+          "endpointType": "EDGE",
+          "rootResourceId": "h2lelj6j7k",
+          "existingResources": {
+            "/MyLambda": "98nqbj",
+            "/": "h2lelj6j7k",
+            "/testtwospeciallambda": "q4szm3",
+            "/1234": "s8tcca",
+            "/testtwospecialkumutest": "wey3lk"
+          },
+          "resourceMode": 1,
+          "resourcePath": "/MyLambda",
+          "resourceName": "MyLambda",
+          "resourceId": "98nqbj",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 1,
+          "stageName": "Test",
+          "stageDeploymentId": "c8s6n7"
+        },
+        "globallyEditable": false
+      }
+    },
+    "envVariables": [
+      {
+        "lambdaId": "all",
+        "varKey": "SIGMA_AWS_ACC_ID",
+        "varValue": null,
+        "shouldPersist": false,
+        "displayOnly": false,
+        "editable": false
+      }
+    ],
+    "packageJSON": {
+      "dependencies": {
+        "slappforge-sdk-aws": {
+          "name": "slappforge-sdk-aws",
+          "version": "0.0.5",
+          "notRemovable": false
+        }
+      }
+    },
+    "lambdaId": "f1aeea4b-1740-4e60-a2b0-1780c94adba1"
+  },
+  "PROJECT_META": {
+    "projectName": "Issue-210",
+    "projectDescription": "Retesting",
+    "projectVersion": "1.0.0",
+    "projectRegion": "us-east-1",
+    "platform": "AWS",
+    "platformRegions": {},
+    "lastSave": 1546323569982
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "Issue-210",
+      "url": "https://github.com/Kumudikatest/Issue-210"
+    }
+  }
+}
