@@ -23,10 +23,10 @@
         "children": [],
         "isRemovable": true,
         "filePath": "Issue-210/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nconst sqs = new SL_AWS.SQS(AWS);\nlet SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You must always end/destroy the DB connection after it's used\n    rds.beginTransaction({\n        instanceIdentifier: 'Test'\n    }, function (error, connection) {\n        if (error) {\n            throw error;\n        }\n        connection.end();\n        sqs.sendMessage({\n            MessageBody: 'Test',\n            QueueUrl: 'https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo',\n            DelaySeconds: '0',\n            MessageDeduplicationId: 'Test',\n            MessageAttributes: {}\n        }, function (data) {\n            // your logic (logging etc) to handle successful message delivery, should be here\n        }, function (error) {\n            // your logic (logging etc) to handle failures, should be here\n            console.log(error);\n        });\n    });\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
+        "code": "let AWS = require('aws-sdk');\nconst sqs = new SL_AWS.SQS(AWS);\nlet SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You must always end/destroy the DB connection after it's used\n    rds.beginTransaction({\n        instanceIdentifier: 'Test'\n    }, function (error, connection) {\n        if (error) {\n            throw error;\n        }\n        connection.end();\n    });\n        sqs.sendMessage({\n            MessageBody: 'Test',\n            QueueUrl: 'https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo',\n            DelaySeconds: '0',\n            MessageDeduplicationId: 'Test',\n            MessageAttributes: {}\n        }, function (data) {\n            // your logic (logging etc) to handle successful message delivery, should be here\n        }, function (error) {\n            // your logic (logging etc) to handle failures, should be here\n            console.log(error);\n        });\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
         "triggers": [
           {
-            "resourceName": "apigusEast1TestAPIMyLambdapost",
+            "resourceName": "apigusEast1TestAPI1MyLambdapost",
             "config": {}
           }
         ],
@@ -158,6 +158,25 @@
           "stageDeploymentId": "c8s6n7"
         },
         "globallyEditable": false
+      },
+      "apigusEast1TestAPI1MyLambdapost": {
+        "name": "apigusEast1TestAPI1MyLambdapost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "TestAPI1",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "MyLambda",
+          "resourcePath": "/MyLambda",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": true,
+          "stageMode": 0,
+          "stageName": "Test"
+        },
+        "globallyEditable": false
       }
     },
     "envVariables": [
@@ -188,7 +207,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1546324582339
+    "lastSave": 1546324794221
   },
   "VCS_STATE": {
     "provider": "GitHub",

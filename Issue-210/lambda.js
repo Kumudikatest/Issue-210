@@ -14,6 +14,7 @@ exports.handler = function (event, context, callback) {
             throw error;
         }
         connection.end();
+    });
         sqs.sendMessage({
             MessageBody: 'Test',
             QueueUrl: 'https://sqs.us-east-1.amazonaws.com/318300609668/test-queue.fifo',
@@ -26,7 +27,5 @@ exports.handler = function (event, context, callback) {
             // your logic (logging etc) to handle failures, should be here
             console.log(error);
         });
-    });
-
     callback(null, { "message": "Successfully executed" });
 }
